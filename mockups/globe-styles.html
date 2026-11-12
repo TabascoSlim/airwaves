@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Airwaves Globe Styles</title>
+<script src="https://unpkg.com/globe.gl@2"></script>
+<script src="https://unpkg.com/topojson-client@3"></script>
+<style>
+  :root { --bg: #07080d; --card: #10131c; --line: #232838; --ink: #eef0f6; --quiet: #9aa1b5; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, sans-serif; padding: 24px 16px 48px; }
+  header { max-width: 1200px; margin: 0 auto 20px; }
+  h1 { font-size: 1.6rem; font-weight: 650; }
+  header p { color: var(--quiet); margin-top: 6px; max-width: 65ch; line-height: 1.5; }
+  .grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .stage { height: 380px; position: relative; cursor: grab; }
+  .stage:active { cursor: grabbing; }
+  .meta { padding: 14px 16px 16px; border-top: 1px solid var(--line); }
+  .meta h2 { font-size: 1.05rem; font-weight: 650; display: flex; align-items: center; gap: 8px; }
+  .swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .meta p { color: var(--quiet); font-size: 0.92rem; line-height: 1.5; margin-top: 6px; }
+  .tag { color: var(--quiet); font-size: 0.8rem; margin-top: 8px; }
+  .loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--quiet); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Airwaves: three Earth styles</h1>
+  <p>Drag to spin each globe. The pulsing marks are sample stations in real cities, standing in for live Radio Browser results.</p>
+</header>
+<div class="grid">
+  <section class="card">
+    <div class="stage" id="g-night"><div class="loading">Loading…</div></div>
+    <div class="meta">
+      <h2><span class="swatch" style="background:#ffb454"></span>A · Night Broadcast</h2>
+      <p>Earth at night: city lights on a black globe, with stations pulsing in warm amber like signals going out after dark.</p>
+      <p class="tag">Photo texture · ring pulses · amber glow</p>
+    </div>
+  </section>
+  <section class="card">
+    <div class="stage" id="g-dots"><div class="loading">Loading…</div></div>
+    <div class="meta">
+      <h2><span class="swatch" style="background:#f472b6"></span>B · Signal Grid</h2>
+      <p>No photo: land drawn as a grid of glowing dots, with stations rising as antennas. Clean, modern, and fast to load.</p>
+      <p class="tag">Dot-matrix countries · antenna bars · teal glow</p>
+    </div>
+  </section>
+  <section class="card">
+    <div class="stage" id="g-dial"><div class="loading">Loading…</div></div>
+    <div class="meta">
+      <h2><span class="swatch" style="background:#c2410c"></span>C · Vintage Dial</h2>
+      <p>An old radio-dial map: cream land with ink borders on a deep sea, and stations marked in red like tuning points.</p>
+      <p class="tag">Country outlines · tuning rings · warm paper tones</p>
+    </div>
+  </section>
+</div>
+
+<script>
+// Sample stations: real city coordinates, used only to preview markers
+const STATIONS = [
+  ['Tokyo', 35.68, 139.69], ['London', 51.51, -0.13], ['New York', 40.71, -74.01], ['São Paulo', -23.55, -46.63],
+  ['Lagos', 6.52, 3.38], ['Mumbai', 19.08, 72.88], ['Sydney', -33.87, 151.21], ['Mexico City', 19.43, -99.13],
+  ['Berlin', 52.52, 13.40], ['Cairo', 30.04, 31.24], ['Seoul', 37.57, 126.98], ['Buenos Aires', -34.60, -58.38],
+  ['Nairobi', -1.29, 36.82], ['Paris', 48.86, 2.35], ['Los Angeles', 34.05, -118.24], ['Jakarta', -6.21, 106.85],
+  ['Istanbul', 41.01, 28.98], ['Toronto', 43.65, -79.38], ['Bogotá', 4.71, -74.07], ['Reykjavík', 64.15, -21.94]
+].map(([city, lat, lng]) => ({ city, lat, lng, label: `Sample station · ${city}` }));
+
+const TEX = 'https://unpkg.com/three-globe/example/img/';
+
+function mount(id) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  const g = Globe({ animateIn: true })(el);
+  const fit = () => g.width(el.clientWidth).height(el.clientHeight);
+  new ResizeObserver(fit).observe(el);
+  fit();
+  g.controls().autoRotate = true;
+  g.controls().autoRotateSpeed = 0.45;
+  g.controls().enableZoom = false;
+  g.pointOfView({ lat: 25, lng: -30, altitude: 2.3 });
+  return g;
+}
+
+function setGlobeColor(g, hex) {
+  const m = g.globeMaterial();
+  m.color.set(hex);
+  if (m.emissive) m.emissive.set('#000000');
+  if ('shininess' in m) m.shininess = 4;
+}
+
+// A · Night Broadcast
+const night = mount('g-night')
+  .globeImageUrl(TEX + 'earth-night.jpg')
+  .backgroundColor('rgba(0,0,0,0)')
+  .atmosphereColor('#ffb454').atmosphereAltitude(0.18)
+  .ringsData(STATIONS)
+  .ringColor(() => t => `rgba(255,180,84,${1 - t})`)
+  .ringMaxRadius(3.2).ringPropagationSpeed(2.2).ringRepeatPeriod(1400)
+  .pointsData(STATIONS).pointColor(() => '#ffd08a').pointAltitude(0.006).pointRadius(0.32)
+  .pointLabel('label');
+
+// B and C need country shapes
+fetch('https://unpkg.com/world-atlas@2/countries-110m.json')
+  .then(r => r.json())
+  .then(topo => {
+    const countries = topojson.feature(topo, topo.objects.countries).features
+      .filter(f => f.properties.name !== 'Antarctica');
+
+    // B · Signal Grid
+    const dots = mount('g-dots')
+      .globeImageUrl(null)
+      .backgroundColor('rgba(0,0,0,0)')
+      .atmosphereColor('#2dd4bf').atmosphereAltitude(0.16)
+      .hexPolygonsData(countries)
+      .hexPolygonResolution(3).hexPolygonMargin(0.45).hexPolygonUseDots(true)
+      .hexPolygonColor(() => 'rgba(45,212,191,0.85)')
+      .pointsData(STATIONS).pointColor(() => '#f472b6')
+      .pointAltitude(0.14).pointRadius(0.22)
+      .pointLabel('label');
+    setGlobeColor(dots, '#0b1220');
+
+    // C · Vintage Dial
+    const dial = mount('g-dial')
+      .globeImageUrl(null)
+      .backgroundColor('rgba(0,0,0,0)')
+      .atmosphereColor('#e9c46a').atmosphereAltitude(0.12)
+      .polygonsData(countries)
+      .polygonCapColor(() => '#efe2c2')
+      .polygonSideColor(() => 'rgba(91,58,30,0.25)')
+      .polygonStrokeColor(() => '#5b3a1e')
+      .polygonAltitude(0.006)
+      .polygonLabel(() => '')
+      .ringsData(STATIONS)
+      .ringColor(() => t => `rgba(194,65,12,${1 - t})`)
+      .ringMaxRadius(2.6).ringPropagationSpeed(1.6).ringRepeatPeriod(1800)
+      .pointsData(STATIONS).pointColor(() => '#9a2a0a').pointAltitude(0.012).pointRadius(0.28)
+      .pointLabel('label');
+    setGlobeColor(dial, '#1f3a4d');
+  })
+  .catch(err => {
+    console.error('Country shapes failed to load', err);
+    ['g-dots', 'g-dial'].forEach(id => {
+      document.getElementById(id).innerHTML = '<div class="loading">Couldn\'t load country shapes. Check your connection and refresh.</div>';
+    });
+  });
+</script>
+</body>
+</html>

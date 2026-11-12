@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airwaves - Web Radio Discovery</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 3D globe (globe.gl) and country shapes (topojson) -->
+    <script src="https://unpkg.com/globe.gl@2"></script>
+    <script src="https://unpkg.com/topojson-client@3"></script>
+    <!-- Time zone lookup from coordinates, for the station's local clock -->
+    <script src="https://unpkg.com/tz-lookup@6.1.25/tz.js"></script>
+</head>
+<body>
+    <header class="header">
+        <h1 class="app-title">Airwaves</h1>
+        <p class="app-subtitle">Discover radio stations from around the world</p>
+    </header>
+
+    <main class="main-container">
+        <section class="globe-section">
+            <div class="globe-container" id="globe-container"></div>
+            <div class="style-switcher">
+                <p class="globe-hint">Click anywhere on the globe to tune in nearby</p>
+                <label for="style-select">Globe style</label>
+                <select class="style-select" id="style-select"></select>
+            </div>
+        </section>
+
+        <section class="player-section">
+            <div class="station-info" id="station-info">
+                <h2 class="station-name" id="station-name">No station selected</h2>
+                <p class="now-playing" id="now-playing" hidden></p>
+                <div class="station-details">
+                    <button type="button" class="station-country place-chip" id="station-country" aria-haspopup="dialog" aria-expanded="false" disabled>—</button>
+                    <span class="station-genre" id="station-genre">—</span>
+                    <span class="station-daylight" id="station-daylight"></span>
+                    <span class="station-clock" id="station-time"></span>
+                </div>
+            </div>
+
+            <div class="fact-card" id="fact-card" role="dialog" aria-labelledby="fact-title" hidden>
+                <div class="fact-head">
+                    <div class="fact-tabs" role="tablist" aria-label="Place">
+                        <button type="button" class="fact-tab" id="fact-tab-city" role="tab" aria-selected="true">City</button>
+                        <button type="button" class="fact-tab" id="fact-tab-country" role="tab" aria-selected="false">Country</button>
+                        <button type="button" class="fact-tab" id="fact-tab-fun" role="tab" aria-selected="false">Fun fact</button>
+                    </div>
+                    <button type="button" class="fact-close" id="fact-close" aria-label="Close facts">×</button>
+                </div>
+                <div class="fact-body" id="fact-body"></div>
+            </div>
+
+            <div class="filter-card" id="filter-card" role="dialog" aria-labelledby="filter-title" hidden>
+                <div class="fact-head">
+                    <h3 class="filter-title" id="filter-title">Random station filters</h3>
+                    <button type="button" class="fact-close" id="filter-close" aria-label="Close filters">×</button>
+                </div>
+                <div class="filter-fields">
+                    <label>Genre <select id="filter-genre" class="style-select"></select></label>
+                    <label>Language <select id="filter-language" class="style-select"></select></label>
+                    <label>Continent <select id="filter-continent" class="style-select"></select></label>
+                </div>
+                <div class="filter-actions">
+                    <button type="button" class="btn btn-secondary" id="filter-clear">Clear</button>
+                    <button type="button" class="btn btn-primary" id="filter-go">🎲 Find a station</button>
+                </div>
+            </div>
+
+            <div class="nearby" id="nearby" hidden>
+                <h3 class="nearby-title" id="nearby-title">Nearby stations</h3>
+                <ul class="nearby-list" id="nearby-list"></ul>
+            </div>
+
+            <div class="audio-controls">
+                <audio id="audio-player" preload="none"></audio>
+                <div class="control-buttons">
+                    <button class="btn btn-primary" id="play-pause-btn" disabled>
+                        <span class="btn-icon">▶️</span>
+                        <span class="btn-text">Play</span>
+                    </button>
+                    <button class="btn btn-secondary" id="random-station-btn">
+                        <span class="btn-icon">🎲</span>
+                        <span class="btn-text">Random</span>
+                    </button>
+                    <button type="button" class="btn btn-filter" id="filter-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="filter-card">Filters</button>
+                </div>
+                <p class="filter-summary" id="filter-summary">Any genre · Any language · Anywhere</p>
+                <div class="volume-control">
+                    <button type="button" class="mute-btn" id="mute-btn" aria-pressed="false" aria-label="Mute">🔊</button>
+                    <label for="volume-slider">Volume</label>
+                    <input type="range" id="volume-slider" min="0" max="100" value="70">
+                    <span class="volume-level" id="volume-level">70%</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 Airwaves - Discover radio stations globally</p>
+    </footer>
+
+    <script src="globe-styles.js"></script>
+    <script src="place-facts.js"></script>
+    <script src="station-filters.js"></script>
+    <script src="country-coordinates.js"></script>
+    <script src="time-utils.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
