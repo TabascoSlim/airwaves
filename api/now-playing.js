@@ -38,9 +38,28 @@ function send(res, status, body) {
     res.end(JSON.stringify(body));
 }
 
-// Some stations put their web address or a slogan where the song goes; only keep real-looking titles
+// Some stations put their web address, an ad marker or raw tag data where the song goes.
+// Keep the readable part of real titles, and drop everything that isn't a song.
+const NOT_A_SONG = [
+    /^ad\s*[|:]/i,                                   // "ad|main - Commercial Break - ..."
+    /\b(commercial break|advertisement|adbreak|ad break|spot block)\b/i,
+];
 function cleanTitle(title) {
-    const text = (title || '').trim();
+    let text = (title || '').replace(/\s+/g, ' ').trim();
+    if (!text) return null;
+    if (NOT_A_SONG.some((pattern) => pattern.test(text))) return null;
+
+    // iHeart-style tags: 'Artist - Song - text="Song" song_spot="M" MediaBaseId="123" ...'.
+    // song_spot "M" means music; anything else (station IDs, promos, ads) isn't a song.
+    const spot = text.match(/\bsong_spot="?([A-Za-z])"?/);
+    if (spot && spot[1].toUpperCase() !== 'M') return null;
+    // Cut the tags off: everything from the first key="value" or key=value pair
+    const tagAt = text.search(/(?:^|\s-\s|\s)[A-Za-z_]+=("[^"]*"|\S+)/);
+    if (tagAt >= 0) text = text.slice(0, tagAt);
+    // Drop web addresses tacked on the end ('Song - https://...')
+    text = text.replace(/(\s*-\s*)?(https?:\/\/|www\.)\S*$/i, '');
+    text = text.replace(/[\s\-–—|]+$/, '').trim();
+
     if (!text || /^[-–—\s]+$/.test(text)) return null;
     if (/^(https?:\/\/)?(www\.)?[\w-]+(\.[\w-]+)+(\/\S*)?$/i.test(text)) return null; // just a web address
     return text;

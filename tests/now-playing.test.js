@@ -107,3 +107,16 @@ test('drops web addresses and blank titles that some stations send instead of so
     assert.equal(cleanTitle('Take this heart / Rea Garvey'), 'Take this heart / Rea Garvey');
     assert.equal(cleanTitle('Mr. Brightside'), 'Mr. Brightside');
 });
+
+test('hides ad breaks and raw tag data, and keeps the song from tagged titles', () => {
+    // seen live on Airwaves: an ad marker, and an iHeart station ID with raw tags
+    assert.equal(cleanTitle('ad|main - Commercial Break - https://prod-54-204-66-137.amperwave.net/ad'), null);
+    assert.equal(cleanTitle('Houston\'s Rock & Alternative - text="94-5 The Buzz" song_spot="T" MediaBaseId="0" itunesTrackId="0"'), null);
+    // the same tag format on a real song keeps just the song
+    assert.equal(cleanTitle('Imagine Dragons - Believer - text="Believer" song_spot="M" MediaBaseId="2410939" itunesTrackId="0"'), 'Imagine Dragons - Believer');
+    assert.equal(cleanTitle('Foo Fighters - Everlong - https://station.example.com/now'), 'Foo Fighters - Everlong');
+    assert.equal(cleanTitle('Advertisement'), null);
+    assert.equal(cleanTitle('Daft Punk - One More Time'), 'Daft Punk - One More Time');
+    assert.equal(cleanTitle('AC/DC - Back In Black'), 'AC/DC - Back In Black');
+    assert.equal(cleanTitle('Salt-N-Pepa - Push It'), 'Salt-N-Pepa - Push It');
+});

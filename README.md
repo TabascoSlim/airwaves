@@ -5,7 +5,7 @@ Live radio from around the world on a 3D globe. Click anywhere on Earth to hear 
 ![JavaScript](https://img.shields.io/badge/JavaScript-vanilla-F7DF1E?logo=javascript&logoColor=black)
 ![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=nodedotjs&logoColor=white)
 ![WebGL](https://img.shields.io/badge/WebGL-globe.gl-990000?logo=webgl&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-17%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-18%20passing-brightgreen)
 
 **Live demo: [airwaves-five.vercel.app](https://airwaves-five.vercel.app)**. Click anywhere on the globe to start listening.
 
@@ -104,6 +104,7 @@ All free and keyless:
 ## Honest limits
 
 - **Not every station shares its song.** Talk and news stations usually don't, so the "now playing" line stays hidden for them. In a test of 12 popular music stations, 10 showed the song.
+- **Ad breaks and station IDs are hidden.** Some stations send ad markers or raw tag data in place of a song; Airwaves filters those out, so the last real song stays on screen during a break.
 - **Some stations don't list where they are.** Those are placed where you clicked, inside the right country.
 - **Wikidata can be slow.** When a town has no article, finding a local musician can take 5 to 10 seconds.
 - **Stations come and go.** The directory is community-run, which is why Airwaves skips stations that don't start.
