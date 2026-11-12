@@ -171,6 +171,7 @@ class AirwavesApp {
         this.filterSummary.textContent = `${pick(this.filterGenre)} · ${pick(this.filterLanguage)} · ${pick(this.filterContinent)}`;
         const active = [this.filterGenre, this.filterLanguage, this.filterContinent].filter((s) => s.value).length;
         this.filterBtn.textContent = active ? `Filters (${active})` : 'Filters';
+        this.filterSummary.hidden = active === 0; // only worth the space when something is set
     }
 
     // Stations per country, so continent picks favour countries that have stations
@@ -479,7 +480,9 @@ class AirwavesApp {
             const place = await lookupPlace(this.currentCoords.lat, this.currentCoords.lng);
             if (station !== this.currentStation) return;
             this.currentPlace = place;
-            const country = place.country || station.country || 'Unknown country';
+            const country = place.countryCode
+                ? shortCountryName(place.countryCode.toUpperCase(), place.country)
+                : place.country || station.country || 'Unknown country';
             this.stationCountry.textContent = place.city ? `📍 ${place.city}, ${country}` : `📍 ${country}`;
         } catch (error) {
             console.warn('Could not name the station\'s city:', error);

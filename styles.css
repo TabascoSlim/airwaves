@@ -65,7 +65,7 @@ body {
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     align-items: center;
     gap: 1.5rem;
-    padding: 1.25rem 2rem;
+    padding: 0.75rem 2rem;
     max-width: 1400px;
     margin: 0 auto;
     width: 100%;
@@ -170,7 +170,7 @@ body {
     font-size: 1.5rem;
     font-weight: 600;
     line-height: 1.25;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
     color: var(--text-primary);
 }
 
@@ -218,7 +218,7 @@ body {
 
 .btn {
     flex: 1;
-    padding: 0.8rem 1.25rem;
+    padding: 0.65rem 1.25rem;
     border: none;
     border-radius: 10px;
     font-size: 1rem;
@@ -335,7 +335,8 @@ body {
 
 .nearby-list {
     list-style: none;
-    max-height: 7rem;
+    /* Shrinks on shorter screens so the whole app fits without scrolling */
+    max-height: clamp(3.5rem, calc(100vh - 600px), 7rem);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -398,7 +399,7 @@ body {
 /* Footer */
 .footer {
     text-align: center;
-    padding: 0.5rem;
+    padding: 0.35rem;
     font-size: 0.85rem;
     background: rgba(15, 23, 42, 0.8);
     border-top: 1px solid var(--border-color);

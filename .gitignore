@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Vercel
+.vercel/
+
+# Secrets (Airwaves needs none today, but just in case)
+.env
+.env.*

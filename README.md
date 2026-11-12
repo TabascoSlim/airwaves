@@ -7,6 +7,10 @@ Live radio from around the world on a 3D globe. Click anywhere on Earth to hear 
 ![WebGL](https://img.shields.io/badge/WebGL-globe.gl-990000?logo=webgl&logoColor=white)
 ![Tests](https://img.shields.io/badge/tests-17%20passing-brightgreen)
 
+**Live demo: [airwaves-five.vercel.app](https://airwaves-five.vercel.app)**. Click anywhere on the globe to start listening.
+
+![Airwaves playing a London station on the Day & Night globe](docs/screenshots/day-and-night.jpg)
+
 ## What it does
 
 - **Click anywhere to tune in.** Airwaves finds stations near the spot you clicked and starts playing the nearest popular one. Zoom in for a tighter search that lists the closest stations first.
@@ -18,9 +22,11 @@ Live radio from around the world on a 3D globe. Click anywhere on Earth to hear 
 - **Self-healing playback.** If a station doesn't start within 8 seconds, Airwaves moves on to the next one.
 - **Two globe styles.** A photo-real "Day & Night" Earth and a "Vintage Dial" map styled like an old radio dial.
 
+![The Vintage Dial globe with a fun fact about London](docs/screenshots/vintage-dial-fun-fact.jpg)
+
 ## Run it locally
 
-Needs [Node.js](https://nodejs.org) 18 or newer. There's nothing to install.
+Needs [Node.js](https://nodejs.org) 18 or newer. There's nothing to install. On Vercel the site deploys as-is: `api/now-playing.js` becomes a serverless function automatically.
 
 ```bash
 git clone https://github.com/TabascoSlim/airwaves.git
@@ -61,6 +67,7 @@ flowchart LR
 | `api/now-playing.js` | Server function that reads the current song title from a stream |
 | `dev-server.js` | Local server that runs the site and the server function together |
 | `tests/` | Automated tests (Node's built-in test runner) |
+| `mockups/` | The three globe styles I compared before choosing, with images |
 
 ### How "now playing" works
 
@@ -83,7 +90,7 @@ I built Airwaves with **Claude** as my coding partner. It started as an unfinish
 5. **The song reader would have crashed every time.** The automated tests caught a variable name used for two different things, before it ever reached a real stream.
 6. **Some stations send ads instead of songs.** Titles that are just a web address are now filtered out, and there's a test for it.
 
-**Design changes along the way.** I asked for a day and night cycle based on where you are. The globe now blends a daytime photo with a city-lights photo using the real position of the sun, and opens facing your part of the world, estimated from your clock's time zone so no location permission is needed. A "Local music" tab became a "Fun fact" tab, because the city summary only explained what the city was.
+**Design changes along the way.** I started by comparing three globe styles side by side ([see the mockups](mockups/)). I asked for a day and night cycle based on where you are. The globe now blends a daytime photo with a city-lights photo using the real position of the sun, and opens facing your part of the world, estimated from your clock's time zone so no location permission is needed. A "Local music" tab became a "Fun fact" tab, because the city summary only explained what the city was.
 
 ## Data sources
 
@@ -103,7 +110,6 @@ All free and keyless:
 
 ## What's next
 
-- A free live deploy on Vercel, where `api/now-playing.js` runs as-is
 - Favourites, listening history and shareable station links
 - "Radio roulette": hop to a new random country every few minutes
 - Song history per station, with links to find a song on Spotify or YouTube
